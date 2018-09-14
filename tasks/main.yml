@@ -1,0 +1,15 @@
+---
+- name: Import RabbitMQ packaging GPG signing key
+  apt_key:
+    url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+    state: present
+
+- name: Add RabbitMQ repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ansible_distribution_release}} main erlang"
+    state: present
+
+- name: Install RabbitMQ packages
+  apt:
+    name: rabbitmq-server
+    state: present
