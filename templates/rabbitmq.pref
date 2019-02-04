@@ -1,0 +1,3 @@
+Package: rabbitmq-server
+Pin: version 3.7.9-1
+Pin-Priority: 501

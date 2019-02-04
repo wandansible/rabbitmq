@@ -1,0 +1,3 @@
+Package: erlang
+Pin: version 1:21.1.1-1
+Pin-Priority: 501
