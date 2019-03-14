@@ -9,16 +9,6 @@
     repo: "deb https://dl.bintray.com/rabbitmq/debian {{ansible_distribution_release}} main erlang"
     state: present
 
-- name: Pin Erlang packages to known good version
-  template:
-    src: "templates/erlang.pref"
-    dest: "/etc/apt/preferences.d/erlang.pref"
-
-- name: Pin RabbitMQ packages to known good version
-  template:
-    src: "templates/rabbitmq.pref"
-    dest: "/etc/apt/preferences.d/rabbitmq.pref"
-
 - name: Install RabbitMQ packages
   apt:
     name: rabbitmq-server
