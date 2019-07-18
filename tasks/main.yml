@@ -6,7 +6,12 @@
 
 - name: Add RabbitMQ repository
   apt_repository:
-    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ansible_distribution_release}} main erlang"
+    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ansible_distribution_release}} main"
+    state: present
+
+- name: Add RabbitMQ-Erlang repository
+  apt_repository:
+    repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ansible_distribution_release}} erlang-21.x"
     state: present
 
 - name: Install RabbitMQ packages
