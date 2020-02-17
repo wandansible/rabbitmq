@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+#
+# Check if any rabbitmq queues are over a threshold
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+{{ rabbitmq_queue_alarm_cron_interval }} root /usr/local/bin/monitor-rabbitmq-queues

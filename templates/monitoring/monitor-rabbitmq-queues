@@ -1,0 +1,18 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# Check if rabbitmq queues on a machine go over a threshold
+# If you run it in cron then an email will go to $MAILTO when a queue is too big
+
+set -euo pipefail
+
+# What value should we alarm at
+THRESHOLD={{ rabbitmq_queue_alarm_threshold }}
+
+while read queue; do
+    queue_name=$(echo ${queue} | awk '{print $1}')
+    queue_size=$(echo ${queue} | awk '{print $2}')
+    if [ "${queue_size}" -ge "${THRESHOLD}" ]; then
+        echo "Error: rabbitmq queue $queue_name has $queue_size messages in it, which is over the threshold ${THRESHOLD}"
+    fi
+done <<<$(rabbitmqctl -q list_queues 2>/dev/null | tail -n +2)

@@ -18,3 +18,19 @@
   apt:
     name: rabbitmq-server
     state: present
+
+- name: Install monitoring shell script
+  template:
+    src: monitoring/monitor-rabbitmq-queues
+    dest: /usr/local/bin/monitor-rabbitmq-queues
+    mode: "u=rwx,g=r,o=r"
+    owner: "root"
+    group: "root"
+
+- name: Install monitoring cron fragment
+  template:
+    src: monitoring/cron
+    dest: /etc/cron.d/monitor-rabbitmq-queues
+    mode: "u=rw,g=r,o=r"
+    owner: "root"
+    group: "root"
