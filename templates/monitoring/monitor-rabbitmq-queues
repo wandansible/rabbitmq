@@ -10,9 +10,12 @@ set -euo pipefail
 THRESHOLD={{ rabbitmq_queue_alarm_threshold }}
 
 while read queue; do
-    queue_name=$(echo ${queue} | awk '{print $1}')
-    queue_size=$(echo ${queue} | awk '{print $2}')
+    if [ -z "${queue}" ]; then
+        continue
+    fi
+    queue_name=$(echo "${queue}" | awk '{print $1}')
+    queue_size=$(echo "${queue}" | awk '{print $2}')
     if [ "${queue_size}" -ge "${THRESHOLD}" ]; then
-        echo "Error: rabbitmq queue $queue_name has $queue_size messages in it, which is over the threshold ${THRESHOLD}"
+        echo "Error: rabbitmq queue ${queue_name} has ${queue_size} messages in it, which is over the threshold ${THRESHOLD}"
     fi
 done <<<$(rabbitmqctl -q list_queues 2>/dev/null | tail -n +2)
