@@ -1,3 +1,8 @@
 ---
+
+rabbitmq_apt_key_fingerprint: "0A9AF2115F4687BD29803A206B73A36E6026DFCA"
+old_rabbitmq_apt_key_fingerprint: "F78372A06FF50C80464FC1B4F7B8CEA6056E8E56"
+erlang_apt_key_fingerprint: "434975BD900CCBE4F7EE1B1ED208507CA14F4FCA"
+
 rabbitmq_queue_alarm_threshold: 1000
 rabbitmq_queue_alarm_cron_interval: "20 * * * *"

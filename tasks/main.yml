@@ -1,18 +1,47 @@
 ---
+
+- name: Disable official RabbitMQ repository on all
+  set_fact:
+    rabbitmq_repo_state: "absent"
+
+- name: Enable official RabbitMQ repository on older debian
+  set_fact:
+    rabbitmq_repo_state: "present"
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version is version('9', '<=')
+
 - name: Import RabbitMQ packaging GPG signing key
   apt_key:
-    url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
-    state: present
+    id: "{{ rabbitmq_apt_key_fingerprint }}"
+    url: "https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc"
+    state: "present"
+  when: rabbitmq_repo_state == "present"
 
-- name: Add RabbitMQ repository
-  apt_repository:
-    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ansible_distribution_release}} main"
-    state: present
+- name: Remove old packaging GPG signing keys
+  apt_key:
+    id: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "{{ erlang_apt_key_fingerprint }}"
+    - "{{ old_rabbitmq_apt_key_fingerprint }}"
 
-- name: Add RabbitMQ-Erlang repository
+- name: Add or remove RabbitMQ repository
   apt_repository:
-    repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ansible_distribution_release}} erlang-21.x"
-    state: present
+    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main"
+    state: "{{ rabbitmq_repo_state }}"
+
+- name: Add or remove RabbitMQ-Erlang repository
+  apt_repository:
+    repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ ansible_distribution_release }} erlang-21.x"
+    state: "{{ rabbitmq_repo_state }}"
+
+- name: Delete RabbitMQ packaging GPG signing key
+  apt_key:
+    id: "{{ rabbitmq_apt_key_fingerprint }}"
+    url: "https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc"
+    state: "absent"
+  when: rabbitmq_repo_state == "absent"
 
 - name: Install RabbitMQ packages
   apt:
