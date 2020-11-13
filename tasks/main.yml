@@ -22,7 +22,7 @@
   apt_key:
     id: "{{ item }}"
     state: "absent"
-  with_items:
+  loop:
     - "{{ erlang_apt_key_fingerprint }}"
     - "{{ old_rabbitmq_apt_key_fingerprint }}"
 
