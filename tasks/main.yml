@@ -14,9 +14,26 @@
 - name: Import RabbitMQ packaging GPG signing key
   apt_key:
     id: "{{ rabbitmq_apt_key_fingerprint }}"
-    url: "https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc"
+    url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key"
     state: "present"
   when: rabbitmq_repo_state == "present"
+
+- name: Import RabbitMQ-Erlang packaging GPG signing key
+  apt_key:
+    id: "{{ rabbitmq_erlang_apt_key_fingerprint }}"
+    url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key"
+    state: "present"
+  when: rabbitmq_repo_state == "present"
+
+- name: Remove RabbitMQ bintray repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main"
+    state: "absent"
+
+- name: Remove RabbitMQ-Erlang bintray repository
+  apt_repository:
+    repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ ansible_distribution_release }} erlang-21.x"
+    state: "absent"
 
 - name: Remove old packaging GPG signing keys
   apt_key:
@@ -25,21 +42,27 @@
   loop:
     - "{{ erlang_apt_key_fingerprint }}"
     - "{{ old_rabbitmq_apt_key_fingerprint }}"
+    - "{{ bintray_rabbitmq_apt_key_fingerprint }}"
 
 - name: Add or remove RabbitMQ repository
   apt_repository:
-    repo: "deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main"
+    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Add or remove RabbitMQ-Erlang repository
   apt_repository:
-    repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ ansible_distribution_release }} erlang-21.x"
+    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Delete RabbitMQ packaging GPG signing key
   apt_key:
     id: "{{ rabbitmq_apt_key_fingerprint }}"
-    url: "https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc"
+    state: "absent"
+  when: rabbitmq_repo_state == "absent"
+
+- name: Delete RabbitMQ-Erlang packaging GPG signing key
+  apt_key:
+    id: "{{ rabbitmq_erlang_apt_key_fingerprint }}"
     state: "absent"
   when: rabbitmq_repo_state == "absent"
 
