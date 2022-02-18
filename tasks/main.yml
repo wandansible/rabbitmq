@@ -1,78 +1,103 @@
 ---
 
 - name: Disable official RabbitMQ repository on all
-  set_fact:
+  ansible.builtin.set_fact:
     rabbitmq_repo_state: "absent"
 
 - name: Enable official RabbitMQ repository on older debian
-  set_fact:
+  ansible.builtin.set_fact:
     rabbitmq_repo_state: "present"
   when:
     - ansible_distribution == "Debian"
     - ansible_distribution_version is version('10', '<')
 
 - name: Import RabbitMQ packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ rabbitmq_apt_key_fingerprint }}"
     url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key"
+    keyring: /usr/share/keyrings/rabbitmq.gpg
     state: "present"
   when: rabbitmq_repo_state == "present"
 
 - name: Import RabbitMQ-Erlang packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ rabbitmq_erlang_apt_key_fingerprint }}"
     url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key"
+    keyring: /usr/share/keyrings/rabbitmq-erlang.gpg
     state: "present"
   when: rabbitmq_repo_state == "present"
 
 - name: Remove RabbitMQ bintray repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main"
     state: "absent"
 
 - name: Remove RabbitMQ-Erlang bintray repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb http://dl.bintray.com/rabbitmq-erlang/debian {{ ansible_distribution_release }} erlang-21.x"
     state: "absent"
 
+- name: Remove old RabbitMQ apt repository entry
+  ansible.builtin.apt_repository:
+    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+    update_cache: no
+    state: "absent"
+
+- name: Remove old RabbitMQ-Erlang apt repository entry
+  ansible.builtin.apt_repository:
+    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+    update_cache: no
+    state: "absent"
+
 - name: Remove old packaging GPG signing keys
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ item }}"
     state: "absent"
+    keyring: /etc/apt/trusted.gpg
   loop:
     - "{{ erlang_apt_key_fingerprint }}"
     - "{{ old_rabbitmq_apt_key_fingerprint }}"
     - "{{ bintray_rabbitmq_apt_key_fingerprint }}"
+    - "{{ rabbitmq_apt_key_fingerprint }}"
+    - "{{ rabbitmq_erlang_apt_key_fingerprint }}"
 
 - name: Add or remove RabbitMQ repository
-  apt_repository:
-    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/rabbitmq.gpg]
+      https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }} main
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Add or remove RabbitMQ-Erlang repository
-  apt_repository:
-    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/rabbitmq-erlang.gpg]
+      https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }} main
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Delete RabbitMQ packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ rabbitmq_apt_key_fingerprint }}"
     state: "absent"
+    keyring: /usr/share/keyrings/rabbitmq.gpg
   when: rabbitmq_repo_state == "absent"
 
 - name: Delete RabbitMQ-Erlang packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ rabbitmq_erlang_apt_key_fingerprint }}"
     state: "absent"
+    keyring: /usr/share/keyrings/rabbitmq-erlang.gpg
   when: rabbitmq_repo_state == "absent"
 
 - name: Install RabbitMQ packages
-  apt:
+  ansible.builtin.apt:
     name: rabbitmq-server
     state: present
 
 - name: Install monitoring shell script
-  template:
+  ansible.builtin.template:
     src: monitoring/monitor-rabbitmq-queues
     dest: /usr/local/bin/monitor-rabbitmq-queues
     mode: "u=rwx,g=r,o=r"
@@ -80,7 +105,7 @@
     group: "root"
 
 - name: Install monitoring cron fragment
-  template:
+  ansible.builtin.template:
     src: monitoring/cron
     dest: /etc/cron.d/monitor-rabbitmq-queues
     mode: "u=rw,g=r,o=r"
