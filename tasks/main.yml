@@ -38,16 +38,14 @@
     state: "absent"
 
 - name: Remove old RabbitMQ apt repository entry
-  ansible.builtin.apt_repository:
-    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
-    update_cache: no
-    state: "absent"
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/dl_cloudsmith_io_public_rabbitmq_rabbitmq_server_deb_{{ ansible_distribution | lower }}.list
+    state: absent
 
 - name: Remove old RabbitMQ-Erlang apt repository entry
-  ansible.builtin.apt_repository:
-    repo: "deb https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
-    update_cache: no
-    state: "absent"
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/dl_cloudsmith_io_public_rabbitmq_rabbitmq_erlang_deb_{{ ansible_distribution | lower }}.list
+    state: absent
 
 - name: Remove old packaging GPG signing keys
   ansible.builtin.apt_key:
@@ -67,6 +65,7 @@
       deb [signed-by=/usr/share/keyrings/rabbitmq.gpg]
       https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/{{ ansible_distribution | lower }}
       {{ ansible_distribution_release }} main
+    filename: rabbitmq
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Add or remove RabbitMQ-Erlang repository
@@ -75,6 +74,7 @@
       deb [signed-by=/usr/share/keyrings/rabbitmq-erlang.gpg]
       https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/{{ ansible_distribution | lower }}
       {{ ansible_distribution_release }} main
+    filename: rabbitmq-erlang
     state: "{{ rabbitmq_repo_state }}"
 
 - name: Delete RabbitMQ packaging GPG signing key
