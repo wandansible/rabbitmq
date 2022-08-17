@@ -1,0 +1,17 @@
+---
+
+- name: Install monitoring shell script
+  ansible.builtin.template:
+    src: monitoring/monitor-rabbitmq-queues
+    dest: /usr/local/bin/monitor-rabbitmq-queues
+    mode: "u=rwx,g=r,o=r"
+    owner: "root"
+    group: "root"
+
+- name: Install monitoring cron fragment
+  ansible.builtin.template:
+    src: monitoring/cron
+    dest: /etc/cron.d/monitor-rabbitmq-queues
+    mode: "u=rw,g=r,o=r"
+    owner: "root"
+    group: "root"
