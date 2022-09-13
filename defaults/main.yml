@@ -1,10 +1,30 @@
 ---
-
 rabbitmq_apt_key_fingerprint: "C072C9604725BAA218E1F2479F4587F226208342"
 rabbitmq_erlang_apt_key_fingerprint: "A16A42516F6A691BC1FF5621E495BB49CC4BBE5B"
 old_rabbitmq_apt_key_fingerprint: "F78372A06FF50C80464FC1B4F7B8CEA6056E8E56"
 erlang_apt_key_fingerprint: "434975BD900CCBE4F7EE1B1ED208507CA14F4FCA"
 bintray_rabbitmq_apt_key_fingerprint: "0A9AF2115F4687BD29803A206B73A36E6026DFCA"
+
+rabbitmq_log_levels:
+  - name: "file"
+    level: "info"
+  - name: "connection"
+    level: "warning"
+rabbitmq_tcp_listeners:
+  - "127.0.0.1:5672"
+  - "::1:5672"
+rabbitmq_tls_listeners: []
+rabbitmq_tls_cacertfile: ""
+rabbitmq_tls_certfile: ""
+rabbitmq_tls_keyfile: ""
+rabbitmq_tls_versions:
+  - "tlsv1.2"
+rabbitmq_tls_ciphers:
+  - "ECDHE-RSA-AES256-GCM-SHA384"
+rabbitmq_auth_mechanisms: []
+rabbitmq_enabled_plugins: []
+rabbitmq_disabled_plugins: []
+rabbitmq_enable_management: false
 
 rabbitmq_queue_alarm_threshold: 1000
 rabbitmq_queue_alarm_cron_interval: "20 * * * *"

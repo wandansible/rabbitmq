@@ -1,0 +1,52 @@
+---
+- name: Remove classic format configuration file rabbitmq.config
+  ansible.builtin.file:
+    path: "/etc/rabbitmq/rabbitmq.config"
+    state: "absent"
+  notify: restart rabbitmq
+
+- name: Configure new format configuration file rabbitmq.conf
+  ansible.builtin.template:
+    src: "templates/rabbitmq.conf"
+    dest: "/etc/rabbitmq/rabbitmq.conf"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart rabbitmq
+
+- name: Configure advanced.config
+  ansible.builtin.template:
+    src: "templates/advanced.config"
+    dest: "/etc/rabbitmq/advanced.config"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  when:
+    - "'rabbitmq_shovel' in rabbitmq_enabled_plugins"
+    - "rabbitmq_tls_versions | length >= 1 or rabbitmq_tls_ciphers | length >= 1"
+  notify: restart rabbitmq
+
+- name: Add rabbitmq management plugin to enabled plugins list
+  ansible.builtin.set_fact:
+    rabbitmq_enabled_plugins: "{{ rabbitmq_enabled_plugins + ['rabbitmq_management'] }}"
+  when: rabbitmq_enable_management
+
+- name: Add rabbitmq management plugin to disabled plugins list
+  ansible.builtin.set_fact:
+    rabbitmq_disabled_plugins: "{{ rabbitmq_disabled_plugins + ['rabbitmq_management'] }}"
+  when: not rabbitmq_enable_management
+
+- name: Enable rabbitmq plugins
+  community.rabbitmq.rabbitmq_plugin:
+    names: "{{ rabbitmq_enabled_plugins | join(',') }}"
+    new_only: yes
+    broker_state: offline
+    state: enabled
+  notify: restart rabbitmq
+
+- name: Disable rabbitmq plugins
+  community.rabbitmq.rabbitmq_plugin:
+    names: "{{ rabbitmq_disabled_plugins | join(',') }}"
+    broker_state: offline
+    state: disabled
+  notify: restart rabbitmq
