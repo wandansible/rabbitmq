@@ -1,0 +1,122 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure RabbitMQ
+    options:
+      rabbitmq_log_levels:
+        description: |
+          Log levels for different output types or log message categories,
+          see https://www.rabbitmq.com/logging.html#log-outputs and
+          https://www.rabbitmq.com/logging.html#log-message-categories
+        type: list
+        elements: dict
+        options:
+          name:
+            description: Output type or message category
+            type: str
+            required: true
+          level:
+            description: Log level
+            type: str
+            required: true
+            choices:
+              - debug
+              - info
+              - warning
+              - error
+              - critical
+              - none
+        default:
+          - name: file
+            level: info
+          - name: connection
+            level: warning
+
+      rabbitmq_tcp_listeners:
+        description: Bind addresses and ports to listen on for client connections
+        type: list
+        elements: str
+        default:
+          - "127.0.0.1:5672"
+          - "::1:5672"
+
+      rabbitmq_tls_listeners:
+        description: List of ports to listen on for TLS connections
+        type: list
+        elements: str
+
+      rabbitmq_tls_cacertfile:
+        description: Path to CA certificate file
+        type: str
+
+      rabbitmq_tls_certfile:
+        description: Path to server certificate file
+        type: str
+
+      rabbitmq_tls_keyfile:
+        description: Path to server key file
+        type: str
+
+      rabbitmq_tls_versions:
+        description: List of TLS versions to enable
+        type: list
+        elements: str
+        default:
+          - tlsv1.2
+
+      rabbitmq_tls_ciphers:
+        description: List of TLS cipher suites to enable (in openssl format)
+        type: list
+        elements: str
+        default:
+          - ECDHE-RSA-AES256-GCM-SHA384
+
+      rabbitmq_auth_mechanisms:
+        description: List of client authentication mechanisms to enable
+        type: list
+        elements: str
+
+      rabbitmq_enabled_plugins:
+        description: List of plugins to enable
+        type: list
+        elements: str
+
+      rabbitmq_disabled_plugins:
+        description: List of plugins to disable
+        type: list
+        elements: str
+
+      rabbitmq_enable_management:
+        description: If true, enable management plugin and listen for management connections on localhost:15672
+        type: bool
+        default: false
+
+      rabbitmq_queue_alarm_threshold:
+        description: Maximum number of messages in a queue before triggering an alert
+        type: int
+        default: 1000
+
+      rabbitmq_queue_alarm_cron_interval:
+        description: Cron interval for checking queue sizes
+        type: str
+        default: 20 * * * *
+
+      rabbitmq_apt_key_fingerprint:
+        description: Fingerprint for RabbitMQ apt signing key
+        type: str
+
+      rabbitmq_erlang_apt_key_fingerprint:
+        description: Fingerprint for RabbitMQ-Erlang apt signing key
+        type: str
+
+      old_rabbitmq_apt_key_fingerprint:
+        description: Old fingerprint for RabbitMQ apt signing key
+        type: str
+
+      erlang_apt_key_fingerprint:
+        description: Fingerprint for Erlang apt signing key
+        type: str
+
+      bintray_rabbitmq_apt_key_fingerprint:
+        description: Fingerprint for RabbitMQ apt signing key from old bintray repo
+        type: str
