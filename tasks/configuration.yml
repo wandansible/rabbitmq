@@ -42,6 +42,7 @@
     new_only: yes
     broker_state: offline
     state: enabled
+  when: rabbitmq_enabled_plugins | length >= 1
   notify: restart rabbitmq
 
 - name: Disable rabbitmq plugins
@@ -49,4 +50,5 @@
     names: "{{ rabbitmq_disabled_plugins | join(',') }}"
     broker_state: offline
     state: disabled
+  when: rabbitmq_disabled_plugins | length >= 1
   notify: restart rabbitmq
