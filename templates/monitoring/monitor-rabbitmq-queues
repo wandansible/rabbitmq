@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # What value should we alarm at
-THRESHOLD={{ rabbitmq_queue_alarm_threshold }}
+THRESHOLD={{ rabbitmq_monitoring_queue_alarm_threshold }}
 
 while read queue; do
     if [ -z "${queue}" ]; then
