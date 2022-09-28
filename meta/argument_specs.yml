@@ -91,12 +91,17 @@ argument_specs:
         type: bool
         default: false
 
-      rabbitmq_queue_alarm_threshold:
+      rabbitmq_monitoring_enable_cronjob:
+        description: If true, enable cron job to monitor rabbitmq queue size
+        type: bool
+        default: false
+
+      rabbitmq_monitoring_queue_alarm_threshold:
         description: Maximum number of messages in a queue before triggering an alert
         type: int
         default: 1000
 
-      rabbitmq_queue_alarm_cron_interval:
+      rabbitmq_monitoring_queue_alarm_cron_interval:
         description: Cron interval for checking queue sizes
         type: str
         default: 20 * * * *

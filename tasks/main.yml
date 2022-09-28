@@ -2,3 +2,4 @@
 - ansible.builtin.import_tasks: apt.yml
 - ansible.builtin.import_tasks: configuration.yml
 - ansible.builtin.import_tasks: monitoring.yml
+  when: rabbitmq_monitoring_enable_cronjob

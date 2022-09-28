@@ -26,5 +26,6 @@ rabbitmq_enabled_plugins: []
 rabbitmq_disabled_plugins: []
 rabbitmq_enable_management: false
 
-rabbitmq_queue_alarm_threshold: 1000
-rabbitmq_queue_alarm_cron_interval: "20 * * * *"
+rabbitmq_monitoring_enable_cronjob: false
+rabbitmq_monitoring_queue_alarm_threshold: 1000
+rabbitmq_monitoring_queue_alarm_cron_interval: "20 * * * *"
