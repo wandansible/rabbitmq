@@ -98,18 +98,13 @@
     filename: rabbitmq-erlang
     state: "{{ rabbitmq_repo_state }}"
 
-- name: Delete RabbitMQ packaging GPG signing key
-  ansible.builtin.apt_key:
-    id: "{{ rabbitmq_apt_key_fingerprint }}"
-    state: "absent"
-    keyring: /etc/apt/keyrings/rabbitmq.gpg
-  when: rabbitmq_repo_state == "absent"
-
-- name: Delete RabbitMQ-Erlang packaging GPG signing key
-  ansible.builtin.apt_key:
-    id: "{{ rabbitmq_erlang_apt_key_fingerprint }}"
-    state: "absent"
-    keyring: /etc/apt/keyrings/rabbitmq-erlang.gpg
+- name: Remove RabbitMQ packaging GPG signing key files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/keyrings/rabbitmq.gpg
+    - /etc/apt/keyrings/rabbitmq-erlang.gpg
   when: rabbitmq_repo_state == "absent"
 
 - name: Install RabbitMQ packages
