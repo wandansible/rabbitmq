@@ -3,6 +3,11 @@ Ansible role: RabbitMQ
 
 Install and configure RabbitMQ.
 
+Requirements
+------------
+
+To manage RabbitMQ plugins, this role requires the community.rabbitmq collection to be installed.
+
 Role Variables
 --------------
 
