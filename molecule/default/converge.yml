@@ -1,0 +1,21 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: "Install sysctl"
+      ansible.builtin.apt:
+        pkg:
+          - "procps"
+
+    - name: "Enable IPv6"
+      ansible.posix.sysctl:
+        name: "net.ipv6.conf.all.disable_ipv6"
+        value: 0
+        state: present
+
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include wandansible.rabbitmq"
+      ansible.builtin.include_role:
+        name: "wandansible.rabbitmq"
